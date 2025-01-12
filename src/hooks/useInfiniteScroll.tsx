@@ -29,7 +29,7 @@ const useInfiniteScroll = ({ fetchData, hasMore, scrollTrigger, rootMargin = '20
         },
         {
           rootMargin,
-        }
+        },
       );
     }
 
