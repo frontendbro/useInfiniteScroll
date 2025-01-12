@@ -4,13 +4,37 @@ import { Card } from '../Card';
 import styles from './styles.module.scss';
 import useInfiniteScroll from '../../hooks/useInfiniteScroll';
 
+/**
+ * Component List
+ * Renders a list of user cards with infinite scroll functionality.
+ */
 export const List: React.FC = () => {
 
+  /**
+   * State to store the list of user cards.
+   * @type {TypeUser[]}
+   */
   const [cards, setCards] = useState<TypeUser[]>([]);
+
+  /**
+   * State to store the current page number for fetching data.
+   * @type {number}
+   */
   const [page, setPage] = useState(1);
+
+  /**
+   * State to determine if there are more items to load.
+   * @type {boolean}
+   */
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchData = async () => {
+  /**
+   * Fetches data from the API and updates the state.
+   * @async
+   * @function fetchData
+   * @returns {Promise<void>}
+   */
+  const fetchData = async (): Promise<void> => {
     try {
       const response = await fetch(`https://randomuser.me/api/?page=${page}&results=${page === 1 ? 20 : 10}&inc=name,picture,email,id`);
       const newCards = await response.json();
@@ -27,6 +51,10 @@ export const List: React.FC = () => {
     }
   };
 
+  /**
+   * Custom hook to handle infinite scroll.
+   * @type {boolean}
+   */
   const [isFetching] = useInfiniteScroll({ fetchData, hasMore, scrollTrigger: '#scroll-trigger' });
 
   return (
