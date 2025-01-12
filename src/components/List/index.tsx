@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TypeUser } from '../../apiTypes';
 import { Card } from '../Card';
 import styles from './styles.module.scss';
@@ -13,9 +13,8 @@ export const List: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const fetchData = async () => {
-
     try {
-      const response = await fetch(`https://randomuser.me/api/?page=${page}&results=10&inc=name,picture,email,id`)
+      const response = await fetch(`https://randomuser.me/api/?page=${page}&results=${page === 1 ? 20 : 10}&inc=name,picture,email,id`)
       const newCards = await response.json();
 
       setCards(prevCards => [...prevCards, ...newCards.results]);
@@ -31,11 +30,7 @@ export const List: React.FC = () => {
 
   }
 
-  const [isFetching] = useInfiniteScroll({fetchData, hasMore});
-
-  // useEffect(() => {
-  //   fetchData()
-  // }, [])
+  const [isFetching] = useInfiniteScroll({fetchData, hasMore, scrollTrigger: '#scroll-trigger'});
 
   return (
     <ul className={styles.list}>
@@ -44,7 +39,7 @@ export const List: React.FC = () => {
           <Card user={item} key={idx} />
         ))
       }
-      <li id="infinite-scroll-trigger" style={{ height: '1px' }}></li>
+      <li id="scroll-trigger" style={{ height: '1px' }}></li>
       {isFetching && <li>Загрузка...</li>}
       {!hasMore && <li>Больше нет данных.</li>}
     </ul>

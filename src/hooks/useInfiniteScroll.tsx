@@ -1,29 +1,37 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 type UseInfiniteScrollProps = {
   fetchData: () => Promise<void>;
   hasMore: boolean;
+  scrollTrigger: string;
+  rootMargin?: string;
 }
 
-const useInfiniteScroll = ({ fetchData, hasMore }: UseInfiniteScrollProps): [boolean] => {
+const useInfiniteScroll = ({ fetchData, hasMore, scrollTrigger, rootMargin = '200px' }: UseInfiniteScrollProps): [boolean] => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
+  const fetchMore = useCallback(async () => {
+    await fetchData();
+    setIsFetching(false);
+  }, [fetchData]);
+
   useEffect(() => {
     if (isFetching) return;
+    const target = document.querySelector(scrollTrigger);
 
-    const target = document.querySelector('#infinite-scroll-trigger');
-    
-    observer.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasMore) {
-          setIsFetching(true);
+    if (!observer.current) {
+      observer.current = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && hasMore) {
+            setIsFetching(true);
+          }
+        },
+        {
+          rootMargin,
         }
-      },
-      {
-        rootMargin: '400px',
-      }
-    );
+      );
+    }
 
     if (target) observer.current.observe(target);
 
@@ -32,18 +40,17 @@ const useInfiniteScroll = ({ fetchData, hasMore }: UseInfiniteScrollProps): [boo
         observer.current.unobserve(target);
       }
     };
-  }, [isFetching, hasMore]);
+  }, [isFetching, hasMore, scrollTrigger, rootMargin]);
 
   useEffect(() => {
     if (!isFetching) return;
 
-    const fetchMore = async () => {
-      await fetchData();
+    fetchMore();
+
+    return () => {
       setIsFetching(false);
     };
-
-    fetchMore();
-  }, [isFetching, fetchData]);
+  }, [isFetching, fetchMore]);
 
   return [isFetching];
 };
