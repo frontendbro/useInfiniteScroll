@@ -4,8 +4,6 @@ import { Card } from '../Card';
 import styles from './styles.module.scss';
 import useInfiniteScroll from '../../hooks/useInfiniteScroll';
 
-
-
 export const List: React.FC = () => { 
 
   const [cards, setCards] = useState<TypeUser[]>([])
@@ -27,7 +25,6 @@ export const List: React.FC = () => {
     } catch (error) {
       console.error('Load error:', error);
     }
-
   }
 
   const [isFetching] = useInfiniteScroll({fetchData, hasMore, scrollTrigger: '#scroll-trigger'});
