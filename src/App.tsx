@@ -1,4 +1,4 @@
-import { List } from './components/List'
+import { List } from './components/List';
 
 function App() {
 
@@ -6,7 +6,7 @@ function App() {
     <div>
       <List/>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
